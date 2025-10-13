@@ -1,0 +1,162 @@
+{% block body %}
+
+<div class="register-container">
+    <h2>Register</h2>
+
+    {% if message %}
+        <div class="alert">{{ message }}</div>
+    {% endif %}
+
+    <form action="{% url 'register' %}" method="post">
+        {% csrf_token %}
+        <div class="form-group">
+            <input class="form-control" autofocus type="text" name="username" placeholder="Username" required>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="email" name="email" placeholder="Email Address" required>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="password" placeholder="Password" required>
+        </div>
+        <div class="form-group">
+            <input class="form-control" type="password" name="confirmation" placeholder="Confirm Password" required>
+        </div>
+
+        <div class="form-group checkbox-group">
+            <label>
+                <input type="checkbox" id="become-tutor" name="become_tutor" value="true"> I want to be a tutor
+            </label>
+        </div>
+
+        <div id="tutor-options" style="display: none;">
+            <div class="form-group">
+                <label for="subject">Select Subject:</label>
+                <select class="form-control" name="subject" id="subject">
+                    <option value="">Select Subject</option>
+                    <option value="Math">Math</option>
+                    <option value="Physics">Physics</option>
+                    <option value="Biology">Biology</option>
+                    <option value="IT">IT</option>
+                    <option value="Afrikaans">Afrikaans</option>
+                    <option value="English">English</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <input class="form-control" type="number" name="mark" placeholder="Enter your mark (%)" min="0" max="100">
+            </div>
+        </div>
+
+        <input class="btn" type="submit" value="Register">
+    </form>
+
+    <div class="login-link">
+        Already have an account? <a href="{% url 'login' %}">Log in here.</a>
+    </div>
+</div>
+
+<script>
+    document.getElementById('become-tutor').addEventListener('change', function() {
+        document.getElementById('tutor-options').style.display = this.checked ? 'block' : 'none';
+    });
+</script>
+
+
+
+{% endblock %}
+
+
+<style>
+
+    .register-container {
+        max-width: 500px;
+        margin: 60px auto;
+        padding: 30px;
+        background-color: #ffffff;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        border-radius: 10px;
+        text-align: center;
+        font-family: Arial, sans-serif;
+        border: 10px solid #072762;
+    }
+
+    .register-container h2 {
+        color: #333;
+        font-weight: bold;
+        font-size: 24px;
+        margin-bottom: 20px;
+    }
+
+    /* Form Group */
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    /* Input Fields */
+    .form-control {
+        width: 100%;
+        padding: 12px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+        box-sizing: border-box;
+        transition: border-color 0.3s ease;
+    }
+
+    .form-control:focus {
+        border-color: #1a73e8;
+        outline: none;
+        box-shadow: 0 0 6px rgba(26, 115, 232, 0.3);
+    }
+
+    /* Checkbox Group */
+    .checkbox-group label {
+        font-weight: 500;
+        font-size: 14px;
+        color: #666;
+    }
+
+    /* Submit Button */
+    .btn {
+        width: 100%;
+        padding: 12px;
+        color: #ffffff;
+        background-color: #072762;
+        border: none;
+        border-radius: 5px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn:hover {
+        background-color: #0f5bbf;
+    }
+
+    /* Alert Message */
+    .alert {
+        padding: 10px;
+        background-color: #ffcccc;
+        color: #cc0000;
+        border: 1px solid #cc0000;
+        border-radius: 5px;
+        margin-bottom: 20px;
+        font-size: 14px;
+    }
+
+    /* Login Link */
+    .login-link {
+        margin-top: 25px;
+        font-size: 15px;
+        color: #666;
+    }
+
+    .login-link a {
+        color: #1a73e8;
+        text-decoration: none;
+        font-weight: 500;
+    }
+
+    .login-link a:hover {
+        text-decoration: underline;
+    }
+</style>

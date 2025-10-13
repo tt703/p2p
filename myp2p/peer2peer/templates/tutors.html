@@ -1,0 +1,565 @@
+{% extends "layout.html" %}
+{% block body %}
+{% load static %}
+
+<style>
+  body {
+            font-family: Arial,benton-sans-regular;
+            margin: 0;
+            padding: 0;
+            background-color: #f9f9f9;
+        }
+        h1 {
+            text-align: center;
+            margin-top: 50px;
+            font-size: 2.5em;
+            color: #2a2a2a;
+        }
+        p {
+            text-align: center;
+            font-size: 1.1em;
+            color: #555;
+        }
+
+
+        .tutors-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 20px;
+            padding: 50px;
+        }
+        .tutor-card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            width: 250px;
+            text-align: center;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+        .tutor-card:hover {
+            transform: translateY(-10px);
+        }
+        .tutor-card img {
+            width: 100%;
+            height: auto;
+            border-bottom: 2px solid #f0f0f0;
+        }
+        .tutor-card h3 {
+            margin: 15px 0 5px;
+            font-size: 1.2em;
+            color: #333;
+        }
+        .tutor-card p {
+            font-size: 0.9em;
+            color: #777;
+            margin-bottom: 15px;
+        }
+
+
+        @media (max-width: 768px) {
+            .tutors-container {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+   .image-row {
+       display: flex;
+       flex-wrap: wrap;
+       justify-content: center;
+       width: 75%;
+       gap: 25px;
+       margin: 10px auto;
+   }
+
+   .team-member {
+       position: relative;
+       width: 30%;
+       transition: transform 0.3s ease;
+       overflow: hidden;
+   }
+
+   .team-member img {
+       width: 100%;
+       height: 100%;
+       object-fit: cover;
+       border-radius: 8px;
+       display: block;
+   }
+
+   .team-member .overlay {
+       position: absolute;
+       top: 0;
+       left: 0;
+       width: 100%;
+       height: 100%;
+       background-color: rgba(211, 211, 211, 0.9);
+       display: flex;
+       flex-direction: column;
+       justify-content: center;
+       align-items: center;
+       opacity: 0;
+       transition: opacity 0.3s ease;
+       border-radius: 8px;
+   }
+
+   .team-member:hover .overlay {
+       opacity: 1;
+       transform: scale(1.05);
+   }
+
+   .overlay h3 {
+       margin: 0;
+       color: Black;
+       text-decoration: underline;
+   }
+
+   .overlay p {
+       color: black;
+       margin: 0;
+   }
+
+   .section-title {
+            text-align: center;
+            margin: 50px 0 20px;
+            font-size: 2.5em;
+            color: #2a2a2a;
+
+        }
+
+        .section-subtitle {
+            text-align: center;
+            font-size: 1.1em;
+            color: #666;
+            margin-bottom: 40px;
+        }
+
+
+        .features-container {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+
+        .feature-box {
+            text-align: center;
+            max-width: 250px;
+        }
+
+        .feature-box img {
+            width: 40px;
+            margin-bottom: 15px;
+        }
+
+        .feature-box h3 {
+            font-size: 1.2em;
+            margin-bottom: 5px;
+            color: #333;
+        }
+
+        .feature-box p {
+            font-size: 0.95em;
+            color: #666;
+        }
+
+
+        .cta-button {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .cta-button a {
+            background-color: #4285f4;
+            color: white;
+            padding: 15px 30px;
+            font-size: 1em;
+            border-radius: 5px;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .cta-button a:hover {
+            background-color: #3367d6;
+        }
+.container34 {
+            max-width: 900px;
+            margin: 20px auto;
+            background-color: noe;
+            padding: 20px;
+        }
+        .header34 {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+        .subheader34 {
+            font-size: 16px;
+            color: #555;
+            margin-bottom: 30px;
+        }
+        .content34 {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+        .content34 img {
+            max-width: 300px;
+            border-radius: 10px;
+        }
+        .articles34 {
+            width: 60%;
+        }
+        .article-item34 {
+            margin-bottom: 20px;
+        }
+        .article-item34 h3 {
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+        .article-item34 p {
+            font-size: 14px;
+            color: #555;
+            margin-bottom: 5px;
+        }
+        .article-item34 a {
+            font-size: 14px;
+            color: #1E90FF;
+            text-decoration: none;
+        }
+        .article-item34 a:hover {
+            text-decoration: underline;
+        }
+        .explore-more34 {
+            font-size: 14px;
+            color: #1E90FF;
+            text-decoration: none;
+        }
+        .explore-more34:hover {
+            text-decoration: underline;
+        }
+.feedback-section {
+            text-align: center;
+            padding: 50px 0;
+            background-color: #e6f0ff;
+        }
+        .feedback-section h1 {
+            font-size: 32px;
+            color: #2C4B9E;
+            margin-bottom: 10px;
+        }
+        .feedback-section p {
+            font-size: 18px;
+            color: #5A7BBE;
+            margin-bottom: 40px;
+        }
+
+         .footer-container {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+.footer-content {
+    max-width: 1000px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 10px;
+}
+.footer-section {
+    flex: 1;
+    min-width: 150px;
+    margin: 5px;
+}
+.footer-section h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #f7f7f7;
+}
+.footer-section p,
+.footer-section a {
+    font-size: 12px;
+    color: #aaa;
+    text-decoration: none;
+}
+.footer-section a:hover {
+    color: #f7f7f7;
+}
+.footer-social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+.footer-social-icons img {
+    width: 20px;
+    height: 20px;
+    transition: opacity 0.3s;
+}
+.footer-social-icons img:hover {
+    opacity: 0.7;
+}
+.footer-bottom {
+    margin-top: 5px;
+    font-size: 10px;
+    color: #777;
+}
+
+
+        .feedback-cards {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .feedback-card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            width: 300px;
+            text-align: center;
+        }
+        .feedback-card img {
+            border-radius: 50%;
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+        .feedback-card h3 {
+            font-size: 20px;
+            margin-bottom: 5px;
+            color: #2C4B9E;
+        }
+        .feedback-card span {
+            font-size: 14px;
+            color: #5A7BBE;
+            display: block;
+            margin-bottom: 15px;
+        }
+        .feedback-card p {
+            font-size: 14px;
+            color: #333;
+            margin-bottom: 15px;
+            font-style: italic;
+        }
+        .feedback-card .stars {
+            color: #2C4B9E;
+            font-size: 18px;
+        }
+
+
+@media (max-width: 768px) {
+    .features-container{
+        flex-direction: column;
+        align-items: center;
+    }
+}
+
+
+</style>
+
+<h2 id="ourteam">Explore Our Tutoring Subjects</h2>
+
+<div class="image-row">
+  <div class="team-member" id="math">
+    <img src="https://miro.medium.com/v2/resize:fit:1400/1*L76A5gL6176UbMgn7q4Ybg.jpeg" alt="Math Tutor">
+    <div class="overlay">
+      <h3>Math</h3>
+    </div>
+  </div>
+  <div class="team-member" id="english">
+    <img src="https://storage.googleapis.com/schoolnet-content/blog/wp-content/uploads/2022/07/How-to-Learn-English-Speaking-at-Home.jpg" alt="English Tutor">
+    <div class="overlay">
+      <h3>English</h3>
+    </div>
+  </div>
+  <div class="team-member" id="physics">
+    <img src="https://t3.ftcdn.net/jpg/01/97/49/40/360_F_197494079_U9dM6IxEBzdUmrhe3DFxyi8L0aFGtQME.jpg" alt="Physics Tutor">
+    <div class="overlay">
+      <h3>Physics</h3>
+    </div>
+  </div>
+  <div class="team-member" id="afrikaans">
+    <img src="https://moodle.pss.com.na/pluginfile.php/2896/course/overviewfiles/Afrikaans%20Subject%20Iamge%20Option%203.jpg" alt="Afrikaans Tutor">
+    <div class="overlay">
+      <h3>Afrikaans</h3>
+    </div>
+  </div>
+  <div class="team-member" id="biology">
+    <img src="https://i.ytimg.com/vi/3tisOnOkwzo/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLAPhKvunyuh1RplFum130YIKAw23A" alt="Biology Tutor">
+    <div class="overlay">
+      <h3>Biology</h3>
+    </div>
+  </div>
+  <div class="team-member" id="it">
+    <img src="https://images.unsplash.com/photo-1515879218367-8466d910aaa4?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8Y29kZXxlbnwwfHwwfHx8MA%3D%3D" alt="IT Tutor">
+    <div class="overlay">
+      <h3>IT</h3>
+    </div>
+  </div>
+</div>
+
+
+
+    <h1>Meet Our Tutors</h1>
+    <p>Discover the profiles and achievements of our outstanding tutors.</p>
+
+    <div class="tutors-container">
+        <div class="tutor-card">
+            <img src="https://r2.flux1.ai/result-123NGHbMOA.png" alt="John Doe">
+            <h3>Felix Moe</h3>
+            <p>Math Expert</p>
+        </div>
+        <div class="tutor-card">
+            <img src="https://r2.flux1.ai/result-ACuxJeGTcK.png" alt="Jane Smith">
+            <h3>Jane Smith</h3>
+            <p>Science Specialist</p>
+        </div>
+        <div class="tutor-card">
+            <img src="https://r2.flux1.ai/result-nJbFYxOl8T.png" alt="Carlos Martinez">
+            <h3>Carlos Martinez</h3>
+            <p>Language Tutor</p>
+        </div>
+        <div class="tutor-card">
+            <img src="https://r2.flux1.ai/result-123NGHbMOA.png" alt="Anna Kim">
+            <h3>Anna Kim</h3>
+            <p>Humanities Mentor</p>
+        </div>
+    </div>
+
+<section class="feedback-section">
+        <h1>Student Feedback</h1>
+        <p>Hear from students who have benefited from our tutoring services.</p>
+
+        <div class="feedback-cards">
+            <div class="feedback-card">
+                <img src="{% static 'images/pic1.jpeg' %}" alt="James Smith">
+                <h3>James Smith</h3>
+                <span>Math</span>
+                <p>ScholarSync has been a game-changer for my math grades. The tutors are knowledgeable and patient.</p>
+                <div class="stars">★★★★★</div>
+            </div>
+
+            <div class="feedback-card">
+  <img src="{% static 'images/pic2.jpeg' %}" alt="James Smith">                <h3>Emily Johnson</h3>
+                <span>English</span>
+                <p>I improved my language skills significantly with the help of  Peer Tutor.</p>
+                <div class="stars">★★★★★</div>
+            </div>
+
+            <div class="feedback-card">
+  <img src="{% static 'images/pic3.jpeg' %}" alt="James Smith">                <h3>Michael Brown</h3>
+                <span>Physics</span>
+                <p>The platform is easy to use and the tutors are very supportive.</p>
+                <div class="stars">★★★★★</div>
+            </div>
+        </div>
+    </section>
+
+<h1 class="section-title">Join Peer Tutor Today</h1>
+    <p class="section-subtitle">Become a tutor or find the perfect peer tutor for your needs.</p>
+
+    <div class="features-container">
+        <div class="feature-box">
+            <img src="https://cdn-icons-png.freepik.com/256/15325/15325288.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="Expert Tutors">
+            <h3>Expert Tutors</h3>
+            <p>Qualified and experienced</p>
+        </div>
+        <div class="feature-box">
+            <img src="https://cdn-icons-png.freepik.com/256/15114/15114382.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="Wide Range of Subjects">
+            <h3>Wide Range of Subjects</h3>
+            <p>Covering all academic fields</p>
+        </div>
+        <div class="feature-box">
+            <img src="https://cdn-icons-png.freepik.com/256/821/821431.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="Student Success">
+            <h3>Student Success</h3>
+            <p>Proven track record</p>
+        </div>
+    </div>
+
+    <div class="cta-button">
+        <a href="#">Get Started</a>
+    </div>
+<hr>
+      <div class="container34">
+        <div class="header34">Educational Insights</div>
+        <div class="subheader34">Explore articles on tutoring tips and educational resources.</div>
+
+        <div class="content34">
+            <img src="https://r2.flux1.ai/result-PTulSHAhsI.png" alt="Library Image">
+
+            <div class="articles34">
+                <div class="article-item34">
+                    <h3>Effective Study Habits</h3>
+                    <p><a href="#">Learn more about study habits</a></p>
+                </div>
+                <div class="article-item34">
+                    <h3>Choosing the Right Tutor</h3>
+                    <p><a href="#">Find tips on choosing a tutor</a></p>
+                </div>
+                <div class="article-item34">
+                    <h3>Maximizing Tutoring Sessions</h3>
+                    <p><a href="#">Discover strategies for tutoring sessions</a></p>
+                </div>
+                <a href="#" class="explore-more34">Explore More Articles &rarr;</a>
+            </div>
+        </div>
+    </div>
+
+
+ <div class="footer-container">
+        <div class="footer-content">
+            <!-- About Section -->
+            <div class="footer-section">
+                <h3>About Peer Tutor</h3>
+                <p>Peer Tutor is a platform that connects students with qualified tutors to support their learning journey across various subjects and levels.</p>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: support@peertutor.com</p>
+                <p>Phone: +27 (66) 444-2929</p>
+            </div>
+
+            <!-- Follow Us Section -->
+                <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="footer-social-icons">
+                    <a href="https://www.facebook.com" aria-label="Facebook">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733547.png" alt="Facebook Icon">
+                    </a>
+                    <a href="https://www.twitter.com" aria-label="Twitter">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733579.png" alt="Twitter Icon">
+                    </a>
+                    <a href="https://www.instagram.com" aria-label="Instagram">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733558.png" alt="Instagram Icon">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Section -->
+        <div class="footer-bottom">
+            <p>&copy; 2024 PeerTutor. All rights reserved.</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </div>
+<script>
+            document.querySelectorAll('.scholar-faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                faqItem.classList.toggle('active');
+            });
+        });
+
+        </script>
+{% endblock %}

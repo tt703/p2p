@@ -1,0 +1,133 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="chat-window">
+    <h2>Chat with {{ chat_with }}</h2>
+    <div class="messages">
+        {% for message in messages %}
+            <div class="message {% if message.sender == request.user %}sent{% else %}received{% endif %}">
+                <div class="message-content">{{ message.content }}</div>
+                <div class="message-timestamp">{{ message.timestamp }}</div>
+            </div>
+        {% endfor %}
+    </div>
+
+    <form id="message-form" class="message-form">
+        <input type="text" id="message-content" placeholder="Type your message..." required>
+        <button type="submit">Send</button>
+    </form>
+</div>
+
+<script>
+  document.getElementById('message-form').addEventListener('submit', function(event) {
+    event.preventDefault();
+    const content = document.getElementById('message-content').value;
+    const chatId = '{{ chat.id }}';
+
+    fetch(`/chat/${chatId}/send/`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': '{{ csrf_token }}',
+        },
+        body: JSON.stringify({ content: content }),
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const messageContainer = document.createElement('div');
+            messageContainer.className = 'message sent';
+            messageContainer.innerHTML = `<div class="message-content">${content}</div>`;
+            document.querySelector('.messages').prepend(messageContainer);
+            document.getElementById('message-content').value = '';
+        } else {
+            console.error(data.error);
+        }
+    })
+    .catch(error => {
+        console.error('Error during fetch:', error);
+    });
+});
+</script>
+
+<style>
+    .chat-window {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        max-height: 600px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        overflow: hidden;
+        background-color: #f9f9f9;
+    }
+
+    .messages {
+        display: flex;
+        flex-direction: column-reverse;
+        flex: 1;
+        padding: 10px;
+        overflow-y: auto;
+        background-color: #f7f7f7;
+    }
+
+    .message {
+        margin-bottom: 10px;
+    }
+
+    .sent {
+        text-align: right;
+    }
+
+    .received {
+        text-align: left;
+    }
+
+    .message-content {
+        padding: 8px;
+        border-radius: 5px;
+        display: inline-block;
+        background-color: #d1e7dd;
+    }
+
+    .sent .message-content {
+        background-color: rgba(144, 238, 144, 0.8);
+    }
+
+    .received .message-content {
+        background-color: rgba(248, 215, 218, 0.8);
+    }
+
+    .message-timestamp {
+        font-size: 0.8em;
+        color: #888;
+    }
+
+    .message-form {
+        display: flex;
+        padding: 10px;
+        background-color: #fff;
+        border-top: 1px solid #ccc;
+    }
+
+    #message-content {
+        flex: 1;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    button {
+        padding: 10px;
+        margin-left: 10px;
+        border: none;
+        border-radius: 5px;
+        background-color: #007bff;
+        color: white;
+        cursor: pointer;
+    }
+
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+{% endblock %}

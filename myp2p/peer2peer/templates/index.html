@@ -1,0 +1,1051 @@
+
+{% extends "layout.html" %}
+{% block body %}
+{% load static %}
+
+
+<script>
+    // Function to save the tutoring session
+    function saveSession() {
+        const date = document.getElementById('session-date').value;
+        const description = document.getElementById('session-description').value;
+        const student = document.getElementById('student-list').value;
+
+        // Validate inputs
+        if (!date) {
+            alert('Please select a date for the session.');
+            return;
+        }
+        if (!student) {
+            alert('Please select a student.');
+            return;
+        }
+
+        fetch('/save_tutoring_session/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            },
+            body: JSON.stringify({ date, description, student })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Session saved successfully!');
+                closeCalendar();
+            } else {
+                alert('Error saving session: ' + data.error);
+            }
+        })
+        .catch(error => console.error('Error saving session:', error));
+    }
+
+    // Function to open the calendar modal
+    function openCalendar(studentId) {
+    fetch('/tutor_students/')  // Ensure this URL is correct for fetching student data
+        .then(response => response.json())
+        .then(data => {
+            const studentList = document.getElementById('student-list');
+            studentList.innerHTML = ''; // Clear current options
+
+            // Populate student list dynamically
+            if (data.students && data.students.length > 0) {
+                data.students.forEach(student => {
+                    const option = document.createElement('option');
+                    option.value = student.id;
+                    option.innerText = student.username;
+                    // Set selected option based on the clicked student ID
+                    if (student.id === studentId) {
+                        option.selected = true;
+                    }
+                    studentList.appendChild(option);
+                });
+            } else {
+                studentList.innerHTML = '<option value="">No students available</option>';
+            }
+
+            // Update session info section
+            const sessionInfo = document.getElementById('session-info');
+            sessionInfo.innerHTML = '';
+            data.sessions.forEach(session => {
+                const sessionDiv = document.createElement('div');
+                sessionDiv.classList.add('meeting-item22');
+                sessionDiv.innerHTML = `<span>${session.date} - Student: ${session.student.username} (${session.description})</span>
+                                        <div class="meeting-actions">
+                                            <button class="btn btn-primary">Join Meeting</button>
+                                            <button class="btn btn-secondary">Teams</button>
+                                            <button class="btn btn-secondary">Google Meet</button>
+                                        </div>`;
+                sessionInfo.appendChild(sessionDiv);
+            });
+
+            // Display the calendar modal
+            document.getElementById("calendar-modal").style.display = "block";
+        })
+        .catch(error => console.error('Error fetching students:', error));
+}
+
+function closeCalendar() {
+    document.getElementById("calendar-modal").style.display = "none";
+}
+
+
+    // Function to get CSRF cookie
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+
+    // Function to display upcoming sessions
+    function displayUpcomingSessions() {
+        fetch('/tutor_students/')
+            .then(response => response.json())
+            .then(data => {
+                const upcomingSessions = document.getElementById('upcoming-sessions');
+                upcomingSessions.innerHTML = '';
+                data.sessions.forEach(session => {
+                    const sessionDiv = document.createElement('div');
+                    sessionDiv.classList.add('meeting-item22');
+                    sessionDiv.innerHTML = `<span>${session.date} - Student: ${session.student.username} (${session.description})</span>
+                                            <div class="meeting-actions">
+                                                <button class="btn btn-primary">Join Meeting</button>
+                                                <button class="btn btn-secondary">Teams</button>
+                                                <button class="btn btn-secondary">Google Meet</button>
+                                            </div>`;
+                    upcomingSessions.appendChild(sessionDiv);
+                });
+            })
+            .catch(error => console.error('Error fetching upcoming sessions:', error));
+    }
+
+    // Function to display upcoming meetings
+    function displayUpcomingMeetings() {
+        fetch('/tutor_students/')
+            .then(response => response.json())
+            .then(data => {
+                const upcomingMeetings = document.getElementById('upcoming-meetings');
+                upcomingMeetings.innerHTML = ''; // Clear previous content
+
+                if (data.meetings && data.meetings.length > 0) {
+                    data.meetings.forEach(meeting => {
+                        const meetingDiv = document.createElement('div');
+                        meetingDiv.classList.add('meeting-item22');
+                        meetingDiv.innerHTML = `<span>${meeting.date} - Meeting with: ${meeting.student.username} (${meeting.description})</span>
+                                                <div class="meeting-actions">
+                                                    <button class="btn btn-primary">Join Meeting</button>
+                                                    <button class="btn btn-secondary">Teams</button>
+                                                    <button class="btn btn-secondary">Google Meet</button>
+                                                </div>`;
+                        upcomingMeetings.appendChild(meetingDiv);
+                    });
+                } else {
+                    upcomingMeetings.innerHTML = '<p>No upcoming meetings available.</p>';
+                }
+            })
+            .catch(error => console.error('Error fetching upcoming meetings:', error));
+    }
+
+    // Initialize functions on DOM content loaded
+    document.addEventListener("DOMContentLoaded", () => {
+        displayUpcomingSessions();
+        displayUpcomingMeetings();
+    });
+</script>
+
+
+
+<style>
+
+     .scholar-container {
+            display: flex;
+            max-width: 100%;
+
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        .scholar-image-container {
+            flex: 1;
+            background: url("https://r2.flux1.ai/result-AcPnHwKLOH.png") center/cover no-repeat;
+            min-height: 400px;
+        }
+        .scholar-content {
+            flex: 1;
+            padding: 24px;
+        }
+        .scholar-faq-header {
+            color: #4a4a4a;
+            margin-bottom: 16px;
+            font-size: 14px;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .scholar-faq-title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 24px;
+            color: #222;
+        }
+        .scholar-faq-item {
+            border-top: 1px solid #ddd;
+        }
+        .scholar-faq-question {
+            font-size: 18px;
+            color: #333;
+            padding: 16px 0;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .scholar-faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            color: #666;
+            font-size: 16px;
+        }
+        .scholar-faq-item.active .scholar-faq-answer {
+            max-height: 100px;
+            padding-bottom: 16px;
+        }
+
+
+
+
+.calendar-button {
+    padding: 6px 12px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #28a745;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.start-chat-button button {
+    background-color: #4CAF50;
+    border: none;
+    color: white;
+    padding: 10px 15px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    margin: 4px 2px;
+    cursor: pointer;
+    border-radius: 4px;
+}
+
+.start-chat-button button:hover {
+    background-color: #45a049; /* Darker green on hover */
+}
+
+
+.calendar-button:hover {
+    background-color: #218838;
+}
+
+    .container22 {
+        padding: 20px;
+        max-width: 800px;
+        margin: auto;
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        border-radius: 12px;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    #show-all-tutors{
+    background-color:#072762;
+    color:white;
+
+    }
+
+    h2, h3 {
+        color: #808080;
+        font-weight: bold;
+    }
+
+    .subject-selection22 {
+        display: flex;
+        justify-content: space-around;
+        flex-wrap: nowrap;
+        text-align: center;
+        margin-bottom: 20px;
+        overflow-x: auto;
+    }
+
+    .subject22 {
+        border: 1px solid #ddd;
+        margin: 10px;
+        cursor: pointer;
+        text-align: center;
+        border-radius: 8px;
+        width: 100px;
+        flex-shrink: 0;
+        transition: background-color 0.3s, transform 0.3s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        position: relative;
+        overflow: hidden;
+    }
+
+.about-us-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    height: auto;
+    padding: 20px;
+    background: linear-gradient(120deg, rgba(0, 0, 128, 0.9), rgba(173, 216, 230, 0.8)),
+                url('https://images.unsplash.com/photo-1544045817-76e91a0c5c0c') no-repeat center center / cover;
+}
+
+.about-us-section {
+    flex: 1;
+    margin: 0 10px;
+    position: relative;
+    text-align: center;
+    background-color: white;
+    color: black;
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+
+.about-us-section:hover {
+    transform: scale(1.05);
+    box-shadow: 0px 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.about-us-content {
+    padding: 20px;
+}
+
+.about-us-title {
+    font-size: 2.5em;
+    margin-bottom: 0.5em;
+    color: #007dff;
+}
+
+.about-us-subtitle {
+    font-size: 2em;
+    margin: 1.5em 0 0.5em;
+    color: #0d45ae;
+}
+
+.about-us-description {
+    font-size: 1.1em;
+    line-height: 1.5;
+    color: black;
+}
+
+
+.cta-button-container {
+    width: 100%;
+    text-align: center;
+    margin-top: 20px;
+    padding: 20px 0;
+}
+
+.calendar-button {
+    padding: 12px 24px;
+    font-size: 16px;
+    color: white;
+    background-color: #007dff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.calendar-button:hover {
+    background-color: #0056b3;
+}
+
+
+     .modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgb(0,0,0);
+    background-color: rgba(0,0,0,0.4);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+}
+
+.close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+
+
+
+
+   .footer-container {
+    background-color: #333;
+    color: #fff;
+    padding: 20px 10px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+
+
+.footer-content {
+    max-width: 1000px;
+    width: 100%;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    gap: 10px;
+}
+.footer-section {
+    flex: 1;
+    min-width: 150px;
+    margin: 5px;
+}
+.footer-section h3 {
+    font-size: 16px;
+    margin-bottom: 5px;
+    color: #f7f7f7;
+}
+.footer-section p,
+.footer-section a {
+    font-size: 12px;
+    color: #aaa;
+    text-decoration: none;
+}
+.footer-section a:hover {
+    color: #f7f7f7;
+}
+.footer-social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 5px;
+    margin-top: 5px;
+}
+.footer-social-icons img {
+    width: 20px;
+    height: 20px;
+    transition: opacity 0.3s;
+}
+.footer-social-icons img:hover {
+    opacity: 0.7;
+}
+.footer-bottom {
+    margin-top: 5px;
+    font-size: 10px;
+    color: #777;
+}
+
+@keyframes gradient-animation {
+    0% {
+        background-position: 0% 0%;
+    }
+    50% {
+        background-position: 100% 100%;
+    }
+    100% {
+        background-position: 0% 0%;
+    }
+}
+
+
+
+
+    .subject-name {
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        color: white;
+        background-color: rgba(0, 0, 0, 0.7);
+        padding: 2px 5px;
+        border-radius: 4px;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .subject22:hover {
+        background-color: rgba(50, 205, 50, 0.7);
+    }
+
+    .subject22:hover .subject-name {
+        opacity: 1;
+    }
+
+    .subject22 img {
+        max-width: 80%;
+        max-height: 80%;
+    }
+
+    .student-list22, .meeting-info22 {
+        background-color: #fff;
+        border-radius: 12px;
+        padding: 15px;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.05);
+        margin-top: 20px;
+         max-width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+
+    .student-item22, .meeting-item22 {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 15px;
+        border-bottom: 1px solid #ddd;
+        transition: background-color 0.3s;
+        border-radius: 8px;
+        margin-bottom: 10px;
+    }
+
+    .student-item22:hover, .meeting-item22:hover {
+        background-color: rgba(0, 0, 139, 0.3);
+    }
+
+    .tutor-actions, .meeting-actions {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .chat-button {
+        padding: 6px 12px;
+        font-size: 14px;
+        color: #fff;
+        background-color: #072762;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .chat-button:hover {
+        background-color: #072762;
+    }
+
+    .btn {
+        padding: 5px 10px;
+        font-size: 14px;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+    }
+
+    .btn-primary {
+        background-color: #072762;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-primary:hover {
+        background-color: #072762;
+    }
+
+    .btn-secondary {
+        background-color: #0d45ae;
+        color: #fff;
+        border: none;
+    }
+
+    .btn-secondary:hover {
+        background-color: #1565c0;
+    }
+
+    .status-icon {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        display: inline-block;
+        margin-right: 5px;
+    }
+
+    .online {
+background-color: red;
+    }
+
+    .offline {
+        background-color: red;
+    }
+
+    .status-text {
+        color: #5C6C80;
+        font-weight: bold;
+    }
+
+    body{
+
+    }
+</style>
+
+
+
+{% if user.is_authenticated %}
+
+    {% if user.is_tutor %}
+
+       <div class="container22">
+    <h2>Manage Your Students</h2>
+
+<div class="student-list22">
+    {% if students %}
+        {% for student in students %}
+            <div class="student-item22">
+                <span>Student: {{ student.user.username }} ({{ student.subject }})</span>
+                <div class="student-actions">
+                    <span>Status: <strong class="status-text">
+                        <span class="status-icon {% if student.is_online %}online{% else %}offline{% endif %}"></span>
+                        {% if student.is_online %}Offline{% else %}Offline{% endif %}
+                    </strong></span>
+                    <a href="{% url 'chat_with_user' username=student.user.username %}">Chat</a>
+                    <button id="calendar-btn-{{ student.id }}" class="calendar-btn" onclick="openCalendar('{{ student.id }}')">Calendar</button>
+                </div>
+            </div>
+        {% endfor %}
+    {% else %}
+        <p>No students available.</p>
+    {% endif %}
+</div>
+<link href='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.2/main.min.css' rel='stylesheet' />
+<script src='https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/5.10.2/main.min.js'></script>
+
+<!-- Calendar Modal -->
+<div id="calendar-modal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCalendar()">&times;</span>
+        <h2>Select Date for Tutoring Session</h2>
+
+        <select id="student-list" style="width: 100%; margin-top: 10px;"></select>
+
+        <div id="session-info" style="margin-top: 10px;"></div>
+
+        <input type="date" id="session-date" />
+        <textarea id="session-description" placeholder="Enter session description here..." rows="4" style="width: 100%; margin-top: 10px;"></textarea>
+
+        <button id="save-session-btn" onclick="saveSession()">Save Session</button>
+    </div>
+</div>
+
+
+
+    <h2>Upcoming Tutoring Sessions</h2>
+
+       <div id="upcoming-sessions" style="margin-top: 10px;"></div>
+
+</div>
+
+
+
+ <div class="footer-container">
+        <div class="footer-content">
+            <!-- About Section -->
+            <div class="footer-section">
+                <h3>About Peer Tutor</h3>
+                <p>Peer Tutor is a platform that connects students with qualified tutors to support their learning journey across various subjects and levels.</p>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: support@peertutor.com</p>
+                <p>Phone: +27 (66) 444-2929</p>
+            </div>
+
+            <!-- Follow Us Section -->
+                <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="footer-social-icons">
+                    <a href="https://www.facebook.com" aria-label="Facebook">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733547.png" alt="Facebook Icon">
+                    </a>
+                    <a href="https://www.twitter.com" aria-label="Twitter">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733579.png" alt="Twitter Icon">
+                    </a>
+                    <a href="https://www.instagram.com" aria-label="Instagram">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733558.png" alt="Instagram Icon">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Section -->
+        <div class="footer-bottom">
+            <p>&copy; 2023 ScholarSync. All rights reserved.</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </div>
+
+    {% else %}
+        <!-- Student Dashboard -->
+<div class="container22">
+    <h2>Select Subject</h2>
+    <div class="subject-selection22">
+        <div class="subject22" data-subject="Math">
+            <img src="https://cdn-icons-png.freepik.com/256/969/969708.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="Math">
+            <span class="subject-name">Math</span>
+        </div>
+        <div class="subject22" data-subject="Physics">
+            <img src="https://cdn-icons-png.freepik.com/256/5225/5225747.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="Physics">
+            <span class="subject-name">Physics</span>
+        </div>
+        <div class="subject22" data-subject="Biology">
+            <img src="https://cdn-icons-png.freepik.com/256/5766/5766311.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="Biology">
+            <span class="subject-name">Biology</span>
+        </div>
+        <div class="subject22" data-subject="IT">
+            <img src="https://cdn-icons-png.freepik.com/256/969/969938.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="IT">
+            <span class="subject-name">IT</span>
+        </div>
+        <div class="subject22" data-subject="Afrikaans">
+            <img src="https://cdn-icons-png.freepik.com/256/1228/1228099.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="Afrikaans">
+            <span class="subject-name">Afrikaans</span>
+        </div>
+        <div class="subject22" data-subject="English">
+            <img src="https://cdn-icons-png.freepik.com/256/4420/4420020.png?ga=GA1.1.1071778472.1728920103&semt=ais_hybrid" alt="English">
+            <span class="subject-name">English</span>
+        </div>
+
+        <button id="show-all-tutors" class="btn">Show All Tutors</button>
+    </div>
+
+</div>
+
+ <h2>Chat To A Tutor:</h2>
+<div class="student-list22">
+    {% for tutor in tutors %}
+        <div class="student-item22">
+            <span>Tutor: {{ tutor.username }} ({{ tutor.subject }})</span>
+            <div class="tutor-actions">
+                <span>Status: <strong class="status-text">
+                    <span class="status-icon {% if tutor.is_online %}online{% else %}offline{% endif %}"></span>
+                    {% if tutor.is_online %}Online{% else %}Offline{% endif %}
+                </strong></span>
+
+                <a href="{% url 'chat_with_user' username=tutor.username %}" class="start-chat-button">
+                    <button type="button">Chat</button>
+                </a>
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+
+<div id="subjects-section" style="margin-top: 10px;">
+    <ul id="subject-list">
+        {% if subjects %}
+            {% for subject in subjects %}
+                <li>{{ subject }}</li>
+            {% endfor %}
+        {% else %}
+
+        {% endif %}
+    </ul>
+</div>
+
+ <div class="footer-container">
+        <div class="footer-content">
+            <!-- About Section -->
+            <div class="footer-section">
+                <h3>About ScholarSync</h3>
+                <p>ScholarSync is a platform that connects students with qualified tutors to support their learning journey across various subjects and levels.</p>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: support@scholarsync.com</p>
+                <p>Phone: +27 (66) 444-2929</p>
+            </div>
+
+            <!-- Follow Us Section -->
+                <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="footer-social-icons">
+                    <a href="https://www.facebook.com" aria-label="Facebook">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733547.png" alt="Facebook Icon">
+                    </a>
+                    <a href="https://www.twitter.com" aria-label="Twitter">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733579.png" alt="Twitter Icon">
+                    </a>
+                    <a href="https://www.instagram.com" aria-label="Instagram">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733558.png" alt="Instagram Icon">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Section -->
+        <div class="footer-bottom">
+            <p>&copy; 2023 ScholarSync. All rights reserved.</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </div>
+
+    {% endif %}
+{% else %}
+    <!-- Public Homepage -->
+    <div class="hero-section">
+        <div class="hero-text">
+            <div class="new-badge">
+                <span class="new-label">New on Peer Tutor</span>
+                <span class="new-info">Just launched our enhanced matching algorithm</span>
+            </div>
+            <h1 class="main-heading">Connect with Expert Tutors Effortlessly</h1>
+            <p class="subtext">Welcome to Peer Tutor, where finding the right peer tutor is just a click away. Enhance your learning experience with tailored support across various subjects.</p>
+            <div class="hero-buttons">
+                <a href="{% url 'tutors' %}" class="btn-primary">Discover Tutors</a>
+                <a href="{% url 'register' %}" class="btn-secondary">Join as a Tutor →</a>
+            </div>
+        </div>
+        <div class="hero-image">
+            <img src="https://r2.flux1.ai/result-y4EH4KHI51.png" alt="Students using laptops" class="hero-img">
+        </div>
+    </div>
+
+    <section class="scholar-section">
+        <h3 class="section-header">Why Choose Peer Tutor?</h3>
+        <h1 class="main-title">Unlock Your Academic Potential</h1>
+        <p class="sub-text">Experience personalized tutoring that adapts to your learning style and goals.</p>
+
+        <div class="feature-container">
+            <div class="feature-item">
+                <div class="icon-box">
+                    <img src="{% static 'images/shake.png' %}" alt="Matchmaking Icon">
+                </div>
+                <h3>Seamless Matchmaking</h3>
+                <p>Connect with tutors who specialize in your area of need quickly and easily.</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon-box">
+                    <img src="{% static 'images/calendar.png' %}" alt="Flexible Learning Icon">
+                </div>
+                <h3>Flexible Learning</h3>
+                <p>Schedule sessions at your convenience, allowing for a balanced academic life.</p>
+            </div>
+            <div class="feature-item">
+                <div class="icon-box">
+                    <img src="{% static 'images/check.png' %}" alt="Quality Assurance Icon">
+                </div>
+                <h3>Quality Assurance</h3>
+                <p>All tutors are vetted and reviewed to ensure top-notch educational support.</p>
+            </div>
+        </div>
+    </section>
+
+     <div class="about-us-container">
+    <div class="about-us-section">
+        <div class="about-us-content">
+            <h1 class="about-us-title">Personalized Learning</h1>
+            <p class="about-us-description">
+                Need help at the last minute? No problem! With our real-time access, you can connect with a tutor whenever it suits you.
+            </p>
+            <h2 class="about-us-subtitle">Available Anytime</h2>
+            <p class="about-us-description">
+                Support should never be out of reach. Join us and unlock your full potential!
+            </p>
+        </div>
+    </div>
+    <div class="about-us-section">
+        <div class="about-us-content">
+            <h1 class="about-us-title">Welcome to Peer Tutor!</h1>
+            <p class="about-us-description">
+                Where knowledge meets camaraderie! We’re not just another tutoring platform; we’re a vibrant community dedicated to empowering students on their academic journey.
+            </p>
+            <h2 class="about-us-subtitle">Why Choose Us?</h2>
+            <p class="about-us-description">
+                Our tutors are not just educators; they’re fellow students who understand the grind.
+            </p>
+        </div>
+    </div>
+    <div class="about-us-section">
+        <div class="about-us-content">
+            <h1 class="about-us-title">Diverse Subjects</h1>
+            <p class="about-us-description">
+                Whether you’re wrestling with numbers or diving into new languages, we have you covered.
+            </p>
+            <h2 class="about-us-subtitle">Tailored Support</h2>
+            <p class="about-us-description">
+                Our platform offers a rich tapestry of subjects tailored to your unique academic journey.
+            </p>
+        </div>
+    </div>
+
+
+    <div class="cta-button-container">
+        <button class="calendar-button big-button">Join Us Today!</button>
+    </div>
+</div>
+
+<div class="scholar-container">
+        <div class="scholar-image-container"></div>
+        <div class="scholar-content">
+            <div class="scholar-faq-header">FAQs</div>
+            <div class="scholar-faq-title">Common Questions About ScholarSync</div>
+
+            <div class="scholar-faq-item">
+                <div class="scholar-faq-question">How do I find a tutor? <span>&#x25BC;</span></div>
+                <div class="scholar-faq-answer">
+                    <p>You can find a tutor by searching through our list of available tutors by subject or expertise.</p>
+                </div>
+            </div>
+
+            <div class="scholar-faq-item">
+                <div class="scholar-faq-question">What subjects are available? <span>&#x25BC;</span></div>
+                <div class="scholar-faq-answer">
+                    <p>We offer a wide range of subjects including math, science, languages, and more.</p>
+                </div>
+            </div>
+
+            <div class="scholar-faq-item">
+                <div class="scholar-faq-question">Can I become a tutor? <span>&#x25BC;</span></div>
+                <div class="scholar-faq-answer">
+                    <p>Yes, you can apply to become a tutor by filling out the application form on our website.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+ <div class="footer-container">
+        <div class="footer-content">
+            <!-- About Section -->
+            <div class="footer-section">
+                <h3>About Peer Tutor</h3>
+                <p>Peer Tutor is a platform that connects students with qualified tutors to support their learning journey across various subjects and levels.</p>
+            </div>
+
+            <!-- Contact Section -->
+            <div class="footer-section">
+                <h3>Contact Us</h3>
+                <p>Email: support@PeerTutor.com</p>
+                <p>Phone: +27 (66) 444-2929</p>
+            </div>
+
+            <!-- Follow Us Section -->
+                <div class="footer-section">
+                <h3>Follow Us</h3>
+                <div class="footer-social-icons">
+                    <a href="https://www.facebook.com" aria-label="Facebook">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733547.png" alt="Facebook Icon">
+                    </a>
+                    <a href="https://www.twitter.com" aria-label="Twitter">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733579.png" alt="Twitter Icon">
+                    </a>
+                    <a href="https://www.instagram.com" aria-label="Instagram">
+                        <img src="https://cdn-icons-png.flaticon.com/256/733/733558.png" alt="Instagram Icon">
+                    </a>
+                </div>
+            </div>
+        </div>
+        <!-- Bottom Section -->
+        <div class="footer-bottom">
+            <p>&copy; 2024 Peer Tutor. All rights reserved.</p>
+            <p><a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a></p>
+        </div>
+    </div>
+
+
+
+{% endif %}
+<script>
+            document.querySelectorAll('.scholar-faq-question').forEach(question => {
+            question.addEventListener('click', () => {
+                const faqItem = question.parentElement;
+                faqItem.classList.toggle('active');
+            });
+        });
+
+
+    const tutors = [
+        {% for tutor in tutors %}
+        {
+            username: '{{ tutor.username }}',
+            subject: '{{ tutor.subject }}',
+            is_online: {% if tutor.is_online %}true{% else %}false{% endif %}
+        }{% if not forloop.last %},{% endif %}
+        {% endfor %}
+    ];
+
+    function displayTutors(filteredTutors) {
+    const tutorList = document.querySelector('.student-list22');
+    tutorList.innerHTML = '';
+
+    filteredTutors.forEach(tutor => {
+        const tutorItem = document.createElement('div');
+        tutorItem.className = 'student-item22';
+        tutorItem.innerHTML = `
+            <span>Tutor: ${tutor.username} (${tutor.subject})</span>
+            <div class="tutor-actions">
+                <span>Status: <strong class="status-text">
+                    <span class="status-icon ${tutor.is_online ? 'online' : 'offline'}"></span>
+                    ${tutor.is_online ? 'Online' : 'Offline'}
+                </strong></span>
+                <button class="chat-button ${!tutor.is_online ? 'disabled' : ''}" onclick="window.location.href='https://wa.me/680261635'">Chat</button>
+            </div>
+        `;
+        tutorList.appendChild(tutorItem);
+    });
+}
+
+
+function filterTutorsBySubject(selectedSubject) {
+    const filteredTutors = tutors.filter(tutor => tutor.subject === selectedSubject);
+    displayTutors(filteredTutors);
+}
+
+
+document.querySelectorAll('.subject22').forEach(subject => {
+    subject.addEventListener('click', () => {
+        const selectedSubject = subject.getAttribute('data-subject');
+        filterTutorsBySubject(selectedSubject);
+    });
+});
+
+
+document.getElementById('show-all-tutors').addEventListener('click', () => {
+    displayTutors(tutors);
+});
+</script>
+
+{% endblock %}

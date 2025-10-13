@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    {% load static %}
+    <title>{% block title %}ScholarSync{% endblock %}</title>
+
+    <!-- Stylesheets -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" integrity="sha512-dO0gN5nR7Uu8wKGoszM6IkTxGgTxp1z6P6bT2dH6+eF8xr5ktM1mVz7H2pU5Y+pZGVyX3erU6OerfTV13QtE8g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link href='https://unpkg.com/css.gg@2.0.0/icons/css/check-o.css' rel='stylesheet'>
+    <link rel="stylesheet" href="{% static 'm.css' %}">
+    <style>
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgb(0,0,0);
+            background-color: rgba(0,0,0,0.4);
+            padding-top: 60px;
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<nav class="navbar navbar-custom">
+    <div class="container">
+        <div class="navbar-logo">
+            <img src="{% static 'images/logooo.png' %}" alt="Logo" class="logo">
+        </div>
+        <ul class="navbar-menu">
+            <li><a href="{% url 'index' %}">Home</a></li>
+            {% if user.is_authenticated %}
+                <li><a href="{% url 'chats' %}">Chats</a></li>
+            {% else %}
+                <li><a href="{% url 'tutors' %}">Tutors</a></li>
+            {% endif %}
+        </ul>
+
+        <div class="navbar-buttons">
+            {% if user.is_authenticated %}
+                <a href="{% url 'logout' %}" class="btn join-btn"><strong>{{ user.username }}</strong></a>
+                <a href="#" class="btn contact-btn" id="contactBtn">Contact us</a>
+            {% else %}
+                <a href="{% url 'login' %}" class="btn join-btn">Sign up/Login</a>
+                <a href="#" class="btn contact-btn" id="contactBtn">Contact us</a>
+            {% endif %}
+        </div>
+
+        <div class="burger-menu">
+            <span></span>
+            <span></span>
+            <span></span>
+        </div>
+    </div>
+
+    <div class="burger-dropdown">
+        <ul>
+            <li><a href="#">Home</a></li>
+            <li><a href="{% url 'tutors' %}">Tutors</a></li>
+            <li><a href="#">Contact Us</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- Modal for Contact Us Form -->
+<div id="contactModal" class="modal">
+    <div class="modal-content">
+        <span class="close">&times;</span>
+        <h2>Contact Us</h2>
+        <form id="contactForm">
+            <div class="form-group">
+                <label for="name">Name:</label>
+                <input type="text" id="name" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label for="number">Phone Number:</label>
+                <input type="tel" id="number" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Submit</button>
+        </form>
+        <div id="responseMessage" class="mt-2"></div>
+    </div>
+</div>
+
+<script>
+    const scrollToTop = () => {
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    };
+
+    const logo = document.querySelector('.logo');
+    if (logo) {
+        logo.addEventListener('click', scrollToTop);
+    }
+
+    let lastScrollTop = 0;
+    const navbar = document.querySelector('.navbar');
+
+    window.addEventListener('scroll', () => {
+        let scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+
+        if (scrollTop > lastScrollTop) {
+            navbar.style.top = '-80px';
+        } else {
+            navbar.style.top = '0';
+        }
+        lastScrollTop = scrollTop <= 0 ? 0 : scrollTop;
+    });
+
+    document.querySelector('.burger-menu').addEventListener('click', () => {
+        document.querySelector('.burger-menu').classList.toggle('active');
+        const dropdown = document.querySelector('.burger-dropdown');
+        dropdown.style.display = dropdown.style.display === 'flex' ? 'none' : 'flex';
+    });
+
+
+    const modal = document.getElementById("contactModal");
+    const btn = document.getElementById("contactBtn");
+    const span = document.getElementsByClassName("close")[0];
+    const contactForm = document.getElementById("contactForm");
+    const responseMessage = document.getElementById("responseMessage");
+
+
+    btn.onclick = function() {
+        modal.style.display = "block";
+    }
+
+    // Close modal when <span> is clicked
+    span.onclick = function() {
+        modal.style.display = "none";
+    }
+
+    // Close modal when clicking outside of it
+    window.onclick = function(event) {
+        if (event.target === modal) {
+            modal.style.display = "none";
+        }
+    }
+
+    // Handle form submission
+    contactForm.onsubmit = function(event) {
+        event.preventDefault(); // Prevent the form from submitting normally
+        // You can add code here to send data to the server if needed
+        responseMessage.textContent = "Sent!";
+        responseMessage.style.color = "green";
+        // Optionally close the modal after a few seconds
+        setTimeout(() => {
+            modal.style.display = "none";
+            contactForm.reset(); // Reset form fields
+        }, 2000);
+    }
+</script>
+
+{% block body %}
+{% endblock %}
+</body>
+</html>
