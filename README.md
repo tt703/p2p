@@ -1,6 +1,5 @@
 # P2P Network Project
-
-A simple peer-to-peer network implementation for distributed systems.
+•	This project is a peer-to-peer (P2P) tutoring system designed for students. It allows students to connect directly with each other without relying on a central server. The system includes features such as decentralized peer discovery, enabling students to find and connect with other peers automatically. Once connected, students can communicate directly, share messages, and meet on live rooms to tutor. Additionally, the system ensures that if a student disconnects, they can automatically reconnect, maintaining a stable and reliable network for collaborative learning and tutoring
 
 ## Features
 
